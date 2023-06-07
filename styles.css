@@ -1,0 +1,215 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url(background.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+}
+
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+nav li {
+  margin: 0 10px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #333;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+nav a:hover {
+  color: #007aff;
+}
+
+nav img {
+  height: 80px;
+  margin-right: 20px;
+  padding-left: 40px;
+}
+
+
+
+#content {
+    padding: 20px;
+   
+}
+#form-container {
+    flex-direction: column;
+  align-items: center;
+  background-color: rgba(211, 248, 255, 0.327);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-container-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 20vh;
+}
+
+#login-container {
+    padding: 80px;
+    flex-direction: column;
+  align-items: center;
+}
+
+form {
+   
+    
+    max-width: max-content;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: rgba(211, 248, 255, 0.115);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+    
+}
+
+table {
+    border-collapse: separate;
+    margin: auto;
+  }
+
+
+
+form label {
+    margin-bottom: 5px;
+}
+
+form input[type="text"],
+form input[type="password"],
+form input[type="phone"],
+form input[type="email"] {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: none;
+    border-bottom: 2px solid #ddd;
+}
+
+form input[type="submit"] {
+    background-color: #007aff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+form input[type="submit"]:hover {
+    background-color: #0066cc;
+}
+
+
+
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  form label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  form input[type="text"],
+  form input[type="phone"],
+  form input[type="password"],
+  form input[type="email"] {
+    margin-bottom: 10px;
+  }
+
+  button {
+    
+        background-color: #007aff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    
+  }
+  /* Стили для кнопок "Уволить" и "Удалить пользователя" */
+.fire-employee-button,
+.delete-user-button {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+/* Стили для кнопок "Установить зарплату" и "Принять на работу" */
+.set-salary-button,
+.hire-user-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+/* Добавляем эффект наведения для всех кнопок */
+button:hover {
+  opacity: 0.8;
+}
+
+
+  
+  
+  
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  table th,
+  table td {
+    border: 0px solid black;
+    padding: 8px;
+  }
+  
+  table th {
+    text-align: center;
+  }
+  
+  #back-button {
+    background-color: #007bff00;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+
+#back-button:hover {
+    background-color: #007aff;
+}
+
+
+  
