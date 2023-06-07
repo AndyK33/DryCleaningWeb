@@ -11,6 +11,7 @@
         <li><a href="/main">Главная</a></li>
         <li><a href="/contacts">Контакты</a></li>
         <li><a href="/account">Личный кабинет</a></li>
+        <li><a href="/gallery">Наши работы</a></li>
       </ul>
     </nav>
 
@@ -93,7 +94,7 @@ const formContainer = document.querySelector('#form-container');
         });
         }
       }
-
+      
         // Добавляем обработчик события submit на форму входа
         const loginForm = document.getElementById('login-form');
         if (loginForm) {
@@ -157,6 +158,8 @@ const formContainer = document.querySelector('#form-container');
                 // Обрабатываем ответ сервера
                 console.log(text);
                 alert(text);
+                location.reload();
+                
               })
               .catch(error => {
                 // Обрабатываем ошибки

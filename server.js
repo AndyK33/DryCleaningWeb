@@ -96,6 +96,41 @@ app.get('/contacts', (req, res) => {
         <li><img src="https://www.pinclipart.com/picdir/big/544-5446048_vk-logo-design-logo-media-sosial-png-clipart.png" alt="Instagram"> https://www.vk.com/chisto</li>
     </ul>
 </div>
+  `;
+  res.send(content);
+});
+
+app.get('/gallery', (req, res) => {
+  const content = `
+ 
+  <div class="container">
+  <link rel="stylesheet" href="stylesAboutUs.css">
+  <h1>Наши работы</h1>
+  <p>Мы гордимся качеством нашей химчистки и удовлетворенностью наших клиентов. Вот некоторые из наших лучших работ, которые демонстрируют наш профессионализм и внимание к деталям.</p>
+  <div class="gallery">
+    <div class="item">
+      <img src="coat.png" alt="Работа 1">
+      <div class="caption">
+        <h3>Работа 1</h3>
+        <p>Это пальто из шерсти было очень загрязнено и имело неприятный запах. Мы провели глубокую химчистку с использованием специальных средств и восстановили его первоначальный вид и свежесть.</p>
+      </div>
+    </div>
+    <div class="item">
+      <img src="wedding-dress.png" alt="Работа 2">
+      <div class="caption">
+        <h3>Работа 2</h3>
+        <p>Это свадебное платье из шелка было испорчено вином. Мы аккуратно удалили все пятна и восстановили его блеск и цвет. Клиентка была очень довольна результатом.</p>
+      </div>
+    </div>
+    <div class="item">
+      <img src="suit.png" alt="Работа 3">
+      <div class="caption">
+        <h3>Работа 3</h3>
+        <p>Это костюм из льна был сильно помят и потерял форму. Мы провели химчистку и глажку с использованием специального оборудования и вернули ему идеальный вид.</p>
+      </div>
+    </div>
+  </div>
+</div>
 
 
   `;
@@ -217,6 +252,7 @@ app.get('/account', (req, res) => {
     <label for="register-email">Email:</label>
     <input type="email" id="register-email" name="email" required>
     <div> <input type="submit" value="Зарегистрироваться"> </div>
+    
     
   </form>
     </div>
