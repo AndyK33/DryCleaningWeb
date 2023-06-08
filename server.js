@@ -46,7 +46,7 @@ app.get('/stylesForTable.css', (req, res) => {
 app.get('/main', (req, res) => {
   // Отправляем контент со списком заявок пользователя
   const content = `
-  <div class="about">
+  <div class="contacts">
   <link rel="stylesheet" href="stylesAboutUs.css">
     <h2>Чисто и точка!</h2>
     <p>Мы - профессиональная химчистка с опытом работы более 10 лет. Мы предлагаем качественную и недорогую услугу по чистке одежды, обуви, ковров и других изделий из ткани. Мы используем современное оборудование и безопасные моющие средства. Мы гарантируем вам своевременную доставку и удовлетворение от результата.</p>
@@ -235,7 +235,7 @@ app.get('/account', (req, res) => {
   </form>
 
   <form id="register-form" style="display: none;">
-     <button id="back-button">&larr; Назад</button>
+     
      <h2>Регистрация</h2>
     <label for="register-name">Имя:</label>
     <input type="text" id="register-name" name="name" required>
@@ -251,7 +251,9 @@ app.get('/account', (req, res) => {
 
     <label for="register-email">Email:</label>
     <input type="email" id="register-email" name="email" required>
-    <div> <input type="submit" value="Зарегистрироваться"> </div>
+    <div> 
+    <button id="back-button">&larr; Назад</button>
+    <input type="submit" value="Зарегистрироваться"> </div>
     
     
   </form>
