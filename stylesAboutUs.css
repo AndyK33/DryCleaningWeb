@@ -60,7 +60,7 @@
 .map {
   
     background-color: #ffffff;
-    width: 600px;
+    width: 700px;
     height: 450px;
 }
 
@@ -75,13 +75,9 @@
     line-height: 1.5;
 }
 
-.map iframe {
-    margin-top: 20px;
-}
-
 .contacts {
     padding: 40px;
-    background-color: rgba(211, 248, 255, 0.866);
+    background-color: rgba(255, 255, 255, 0.866);
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
@@ -160,10 +156,9 @@
   
   
   .container {
-    max-width: 1200px;
-    margin: 0 auto;
+    margin: 0 ;
     font-family: Arial, sans-serif;
-    background-color: rgba(211, 248, 255, 0.866);
+    background-color: rgba(255, 255, 255, 0.866);
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   padding: 40px;
