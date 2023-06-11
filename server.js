@@ -72,7 +72,7 @@ app.get('/main', (req, res) => {
     <p>Мы находимся по адресу: Владимир, улица Мира, 7в. Вы можете посмотреть на карту ниже.</p>
 
     <div class="map">
-    <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3Af85e90d1945a7e9b6381359ffd8f0371f17c2d6d435384193129786606d7527a&amp;source=constructor" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+    <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3Af85e90d1945a7e9b6381359ffd8f0371f17c2d6d435384193129786606d7527a&amp;source=constructor" width="700" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
 </div>
 
 
@@ -215,7 +215,7 @@ app.get('/account', (req, res) => {
     }
 
 
-  } else {
+  }  else {
     // Иначе отправляем контент с формами входа и регистрации
     const content = `
     <div class="form-container-login">
@@ -252,9 +252,13 @@ app.get('/account', (req, res) => {
     <label for="register-email">Email:</label>
     <input type="email" id="register-email" name="email" required>
     <div> 
-    <button id="back-button">&larr; Назад</button>
-    <input type="submit" value="Зарегистрироваться"> </div>
     
+    <input type="submit" value="Зарегистрироваться"> </div>
+    <div>
+    <br>
+    <br>
+    <button id="back-button">&larr; Назад</button>
+    </div>
     
   </form>
     </div>
@@ -374,21 +378,15 @@ app.post('/login', upload.none(), async (req, res) => {
     // Подключаемся к базе данных
     await poolConnect;
 
-    // Выполняем запрос к базе данных для проверки совпадения логина и пароля в таблице Users
+
+    // Выполняем запрос к базе данных для проверки совпадения логина и пароля в таблице Administrators
     let result = await pool.request()
       .input('username', sql.NVarChar, username)
       .input('password', sql.NVarChar, password)
-      .query('SELECT * FROM Users WHERE username = @username AND password = @password');
+      .query('SELECT * FROM Administrators WHERE Login = @username AND Password = @password');
 
-    if (result.recordset.length === 0) {
-      // Если совпадение не найдено в таблице Users, выполняем запрос к таблице Administrators
-      result = await pool.request()
-        .input('username', sql.NVarChar, username)
-        .input('password', sql.NVarChar, password)
-        .query('SELECT * FROM Administrators WHERE Login = @username AND Password = @password');
-    }
 
-    if (result.recordset.length === 0) {
+if (result.recordset.length === 0) {
       // Если совпадение не найдено в таблице Administrators, выполняем запрос к таблице Employees
       result = await pool.request()
         .input('username', sql.NVarChar, username)
@@ -396,6 +394,21 @@ app.post('/login', upload.none(), async (req, res) => {
         .query('SELECT * FROM Employees WHERE Login = @username AND Password = @password');
     }
 
+    
+if (result.recordset.length === 0) {
+      // Если совпадение не найдено в таблице Админов, выполняем запрос к таблице Users
+      result = await pool.request()
+        .input('username', sql.NVarChar, username)
+        .input('password', sql.NVarChar, password)
+         .query('SELECT * FROM Users WHERE username = @username AND password = @password');
+    }
+    
+
+    
+
+    
+
+    
     if (result.recordset.length > 0) {
       // Если совпадение найдено в одной из таблиц, сохраняем имя пользователя и роль в сессии
       req.session.username = username;
@@ -500,193 +513,207 @@ app.get('/create-request',upload.none(), (req, res) => {
   const content = `
  
   <form id="create-request-form">
-  
-    <table>
-      <tr>
-        <th>Предмет</th>
-        <th>Фото</th>
-        <th>Цена</th>
-        <th>Количество</th>
-      </tr>
-      <tr>
-        <td>Платье</td>
-        <td><img src="\dress.jfif" alt="Платье" width="100" height = "100"></td>
-        <td>500 руб.</td>
-        <td><input type="number" name="dress" min="0"></td>
-      </tr>
-      <tr>
-        <td>Рубашка</td>
-        <td><img src="\shirt.jfif" alt="Рубашка" width="100" height = "100"></td>
-        <td>300 руб.</td>
-        <td><input type="number" name="shirt" min="0"></td>
-      </tr>
-      <tr>
-        <td>Шорты</td>
-        <td><img src="\shorts.jfif" alt="Шорты" width="100" height = "100"></td>
-        <td>100 руб.</td>
-        <td><input type="number" name="shorts" min="0"></td>
-      </tr>
-      <tr>
-        <td>Джинсы</td>
-        <td><img src="\jeans.jfif" alt="Джинсы" width="100" height = "100"></td>
-        <td>250 руб.</td>
-        <td><input type="number" name="jeans" min="0"></td>
-      </tr>
-      <tr>
-        <td>Носки</td>
-        <td><img src="\socks.jfif" alt="Носки" width="100" height = "100"></td>
-        <td>250 руб.</td>
-        <td><input type="number" name="socks" min="0"></td>
-      </tr>
-
-    </table>
-    <br>
-    <br>
-
-    Итоговая стоимость: 
-    <div id='total-container'>
-      <span id='total'>0</span> руб.
+  <div class="stepform-container">
+    <div class="stepform-header">
+      <h1>Оформление заказа</h1>
+      <p>Выберите товары и услуги, которые вы хотите заказать</p>
     </div>
-    <br>
-    <br>
-
-    Способ доставки:
-    <br>
-
-    <div id='delivery-container'>
-      <input type='radio' id='pickup' name='delivery' value='pickup'>
-      <label for='pickup'>Самовывоз</label>
-
-      <input type='radio' id='delivery' name='delivery' value='delivery'>
-      <label for='delivery'>Доставка на дом</label><br>
+    <div class="stepform-body">
+      <div class="stepform-item">
+        <div class="stepform-image">
+          <img src="\dress.jfif" alt="Платье" width="170" height = "170">
+        </div>
+        <div class="stepform-info">
+          <h3>Платье</h3>
+          <p>500 руб.</p>
+          <input type="number" name="dress" min="0" placeholder="Количество">
+        </div>
+      </div>
+      <div class="stepform-item">
+        <div class="stepform-image">
+          <img src="\shirt.jfif" alt="Рубашка" width="170" height = "170">
+        </div>
+        <div class="stepform-info">
+          <h3>Рубашка</h3>
+          <p>300 руб.</p>
+          <input type="number" name="shirt" min="0" placeholder="Количество">
+        </div>
+      </div>
+      <div class="stepform-item">
+        <div class="stepform-image">
+          <img src="\shorts.jfif" alt="Шорты" width="170" height = "170">
+        </div>
+        <div class="stepform-info">
+          <h3>Шорты</h3>
+          <p>100 руб.</p>
+          <input type="number" name="shorts" min="0" placeholder="Количество">
+        </div>
+      </div>
+      <div class="stepform-item">
+        <div class="stepform-image">
+          <img src="\jeans.jfif" alt="Джинсы" width="170" height = "170">
+        </div>
+        <div class="stepform-info">
+          <h3>Джинсы</h3>
+          <p>250 руб.</p>
+          <input type="number" name="jeans" min="0" placeholder="Количество">
+        </div>
+      </div>
+      <div class="stepform-item">
+        <div class="stepform-image">
+          <img src="\socks.jfif" alt="Носки" width="170" height = "170">
+        </div>
+        <div class="stepform-info">
+          <h3>Носки</h3>
+          <p>250 руб.</p>
+          <input type="number" name="socks" min="0" placeholder="Количество">
+        </div>
+      </div>
+      <div class="stepform-item">
+        <div class="stepform-image">
+          <img src="\hat.jfif" alt="Шляпа" width="170" height = "170">
+        </div>
+        <div class="stepform-info">
+          <h3>Шляпа</h3>
+          <p>400 руб.</p>
+          <input type="number" name="hat" min="0" placeholder="Количество">
+        </div>
+      </div>
 
     </div>
 
-    Оформить заказ: <div id='submit-container'>
-      <input type='submit' value='Оформить заказ'>
-    </div>
-    
-    </form>
-    
- 
+    <br>
 
+    <h2>Итоговая стоимость:</h2> 
+    <!-- Выделить жирным шрифтом -->
+    <span id='total' class = "total">0</span> руб.
+    <br>
+    <h2>Способ доставки:</h2>
+<br>
 
+<!-- Выделить жирным шрифтом -->
+Привезу сам<input type='radio' id='pickup' name='delivery' value='pickup'>
+Заберите вещи<input type='radio' id='delivery' name='delivery' value='delivery'>
 
-
-
-  `;
-  res.send(content);
-});
-
-
-app.get('/my-profile', (req, res) => {
-  // Отправляем контент с информацией о профиле пользователя
-  const content = `
-    <h1>Мой профиль</h1>
-    <div>
-  <h1>Добро пожаловать в нашу химчистку!</h1>
-  <p>Чисто и точка! ценит ваше мнение и мы хотели бы узнать, как мы можем улучшить наши услуги.</p>
-  <form action="/submit-survey" method="POST">
-    <h2>Оцените качество нашей химчистки:</h2>
-    <label for="question-1">1. Насколько вы довольны качеством чистки?</label><br>
-    <input type="radio" id="q1-a1" name="question-1" value="1">
-    <label for="q1-a1">Очень доволен</label><br>
-    <input type="radio" id="q1-a2" name="question-1" value="2">
-    <label for="q1-a2">Доволен</label><br>
-    <input type="radio" id="q1-a3" name="question-1" value="3">
-    <label for="q1-a3">Нейтрален</label><br>
-    <input type="radio" id="q1-a4" name="question-1" value="4">
-    <label for="q1-a4">Не доволен</label><br>
-    <input type="radio" id="q1-a5" name="question-1" value="5">
-    <label for="q1-a5">Очень не доволен</label><br>
-
-    <label for="question-2">2. Насколько вы довольны скоростью обслуживания?</label><br>
-    <input type="radio" id="q2-a1" name="question-2" value="1">
-    <label for="q2-a1">Очень доволен</label><br>
-    <input type="radio" id="q2-a2" name="question-2" value="2">
-    <label for="q2-a2">Доволен</label><br>
-    <input type="radio" id="q2-a3" name="question-2" value="3">
-    <label for="q2-a3">Нейтрален</label><br>
-    <input type="radio" id="q2-a4" name="question-2" value="4">
-    <label for="q2-a4">Не доволен</label><br>
-    <input type="radio" id="q2-a5" name="question-2" value="5">
-    <label for="q2-a5">Очень не доволен</label><br>
-
-
-    <label for="question-3">3. Насколько вы довольны ценами на услуги?</label><br>
-    <input type="radio" id="q3-a1" name="question-3" value="1">
-    <label for="q3-a1">Очень доволен</label><br>
-    <input type="radio" id="q3-a2" name="question-3" value="2">
-    <label for="q3-a2">Доволен</label><br>
-    <input type="radio" id="q3-a3" name="question-3" value="3">
-    <label for="q3-a3">Нейтрален</label><br>
-    <input type="radio" id="q3-a4" name="question-3" value="4">
-    <label for="q3-a4">Не доволен</label><br>
-    <input type="radio" id="q3-a5" name="question-3" value="5">
-    <label for="q3-a5">Очень не доволен</label><br>
-    <label for="question-4">4. Насколько вы довольны общением с персоналом?</label><br>
-
-
-<input type="radio" id="q4-a1" name="question-4" value="1">
-<label for="q4-a1">Очень доволен</label><br>
-<input type="radio" id="q4-a2" name="question-4" value="2">
-<label for="q4-a2">Доволен</label><br>
-<input type="radio" id="q4-a3" name="question-4" value="3">
-<label for="q4-a3">Нейтрален</label><br>
-<input type="radio" id="q4-a4" name="question-4" value="4">
-<label for="q4-a4">Не доволен</label><br>
-<input type="radio" id="q4-a5" name="question-4" value="5">
-<label for="q4-a5">Очень не доволен</label><br>
-
-<label for="question-5">5. Насколько вероятно, что вы порекомендуете нашу химчистку своим друзьям и знакомым?</label><br>
-<input type="radio" id="q5-a1" name="question-5" value="1">
-<label for="q5-a1">Очень вероятно</label><br>
-<input type="radio" id="q5-a2" name="question-5" value="2">
-<label for="q5-a2">Вероятно</label><br>
-<input type="radio" id="q5-a3" name="question-5" value="3">
-<label for="q5-a3">Нейтрален</label><br>
-<input type="radio" id="q5-a4" name="question-5" value="4">
-<label for="q5-a4">Маловероятно</label><br>
-<input type="radio" id="q5-a5" name="question-5" value="5">
-<label for="q5-a5">Очень маловероятно</label><br>
-
-
-    <input type="submit" value="Отправить">
-  </form>
+<div id="address-fields" style="display: none;">
+  <h3>Адрес доставки:</h3>
+  <label for="postcode">Почтовый индекс:</label>
+  <input type="text" id="postcode" name="postcode">
+  <br>
+  <label for="region">Регион:</label>
+  <input type="text" id="region" name="region">
+  <br>
+  <label for="city">Город:</label>
+  <input type="text" id="city" name="city">
+  <br>
+  <label for="street">Улица:</label>
+  <input type="text" id="street" name="street">
+  <br>
+  <label for="building">Дом:</label>
+  <input type="text" id="building" name="building">
+  <br>
+  <label for="apartment">Квартира:</label>
+  <input type="text" id="apartment" name="apartment">
 </div>
 
+<br>
+<br>
+<br>
+
+<!-- Выделить жирным шрифтом -->
+
+<input type='submit' value='Оформить заказ'>
+
+    
+  </div>
+
+</form>
+    
   `;
   res.send(content);
 });
 
 
+  app.get('/my-profile', async (req, res) => {
+    try {
+      // Получаем имя пользователя из сессии
+      const username = req.session.username;
 
-app.post('/submit-survey', async (req, res) => {
-  try {
-    // Получаем ответы из тела запроса
-    const answers = [req.body['question-1'], req.body['question-2'], req.body['question-3'], req.body['question-4'], req.body['question-5']];
+      // Подключаемся к базе данных
+      await poolConnect;
 
-    // Подключаемся к базе данных
-    await poolConnect;
+      // Получаем информацию о пользователе из таблицы "Users"
+      const userResult = await pool.request()
+        .input('username', sql.NVarChar, username)
+        .query('SELECT * FROM Users WHERE username = @username');
 
-    // Заносим ответы в таблицу "Surveys"
-    await pool.request()
-      .input('answer1', sql.Int, answers[0])
-      .input('answer2', sql.Int, answers[1])
-      .input('answer3', sql.Int, answers[2])
-      .input('answer4', sql.Int, answers[3])
-      .input('answer5', sql.Int, answers[4])
-      .query('INSERT INTO Surveys (Answer1, Answer2, Answer3, Answer4, Answer5) VALUES (@answer1, @answer2, @answer3, @answer4, @answer5)');
+      // Получаем информацию о заказах пользователя из таблицы "Orders"
+      const ordersResult = await pool.request()
+        .input('username', sql.NVarChar, username)
+        .query('SELECT * FROM Orders WHERE username = @username');
 
-    // Отправляем сообщение об успешном сохранении ответов
-    res.send('Спасибо за ваш отзыв!');
-  } catch (err) {
-    // Обрабатываем ошибки
-    console.error(err);
-    res.status(500).send('Ошибка при сохранении ответов анкеты');
-  }
-});
+      // Проверяем, есть ли информация о пользователе в базе данных
+      if (userResult.recordset.length > 0) {
+        // Получаем информацию о пользователе
+        const user = userResult.recordset[0];
 
+        // Генерируем HTML-код для страницы профиля
+        let profile = `<h1>Мой профиль</h1><p>Привет, ${user.Name}!</p>
+        <p>У тебя ${ordersResult.recordset.length} заказов.</p>
+        <button id="update-profile-button">Изменить данные аккаунта</button>
+        <div id="update-profile-form" style="display: none;">
+        <form method="POST" action="/update-profile">
+        <label for="name">Имя:</label><input type="text" id="name" name="name" value="${user.Name}">
+        <br>
+        <label for="phone">Телефон:</label><input type="text" id="phone" name="phone" value="${user.Phone}">
+        <br>
+        <label for="password">Пароль:</label><input type="password" id="password" name="password">
+        <br>
+        <input type="submit" value="Сохранить"></form></div>`;
+
+        // Отправляем HTML-код страницы профиля клиенту
+        res.send(profile);
+      } else {
+        // Отправляем сообщение об ошибке клиенту
+        res.status(404).send('Пользователь не найден');
+      }
+    } catch (err) {
+      // Обрабатываем ошибки
+      console.error(err);
+      res.status(500).send('Ошибка при получении информации о пользователе');
+    }
+  });
+
+  app.post('/update-profile', upload.none(), async (req, res) => {
+    try {
+      // Получаем имя пользователя из сессии
+      const username = req.session.username;
+  
+      // Получаем данные из формы
+      const name = req.body.name;
+      const phone = req.body.phone;
+      const password = req.body.password;
+  
+      // Подключаемся к базе данных
+      await poolConnect;
+  
+      // Обновляем информацию о пользователе в таблице "Users"
+      await pool.request()
+        .input('username', sql.NVarChar, username)
+        .input('name', sql.NVarChar, name)
+        .input('phone', sql.NVarChar, phone)
+        .input('password', sql.NVarChar, password)
+        .query('UPDATE Users SET Name = @name, Phone = @phone, Password = @password WHERE username = @username');
+  
+      // Отправляем сообщение об успешном обновлении данных клиенту
+      res.send('Данные в профиле успешно обновлены!');
+    } catch (err) {
+      // Обрабатываем ошибки
+      console.error(err);
+      res.status(500).send('Ошибка при обновлении информации о пользователе');
+    }
+  });
+  
 
 
 
@@ -745,6 +772,7 @@ app.post('/create-order', upload.none(), async (req, res) => {
     if (req.body.shorts) items.push(`Шорты (${req.body.shorts})`);
     if (req.body.jeans) items.push(`Джинсы (${req.body.jeans})`);
     if (req.body.socks) items.push(`Носки (${req.body.socks})`);
+    if (req.body.socks) items.push(`Шляпа (${req.body.hat})`);
 
     // Преобразуем массив в строку
     const itemsString = items.join(', ');
@@ -768,6 +796,7 @@ app.post('/create-order', upload.none(), async (req, res) => {
 
     // Отправляем ответ клиенту
     res.send('Заказ успешно оформлен');
+    
   } catch (err) {
     // Обрабатываем ошибки
     console.error(err);

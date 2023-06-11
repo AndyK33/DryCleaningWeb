@@ -6,14 +6,17 @@
   </head>
   <body>
     <nav>
-      <img src="logo.png" alt="Логотип">
+      <img src="logo1.png" alt="Логотип">
       <ul>
         <li><a href="/main">Главная</a></li>
-        <li><a href="/contacts">Контакты</a></li>
-        <li><a href="/account">Личный кабинет</a></li>
+        <li><a href="/contacts">Контакты</a></li> 
         <li><a href="/gallery">Наши работы</a></li>
       </ul>
+      <div class="account">
+        <a href="/account">Личный кабинет</a>
+      </div>
     </nav>
+    
 
     <div id="content">
       <!-- Content will be loaded here -->
@@ -46,14 +49,37 @@ const formContainer = document.querySelector('#form-container');
           event.preventDefault();
           // Получаем путь ссылки
           const path = event.target.getAttribute('href');
-          formContainer.style.display = 'none';
           
+          // Скрываем элемент form-container, если путь не равен "/account"
+             if (path !== '/account') {
+               formContainer.style.display = 'none';
+              }
+            else {
+              
+// Проверяем статус авторизации пользователя
+fetch('/account')
+  .then(response => response.text())
+  .then(content => {
+
+  
+    if (content.includes('Личный кабинет')) {
+      // Если текущий путь равен "/account" и пользователь авторизован, отображаем элемент form-container
+      formContainer.style.display = 'flex';
+    } else {
+      // Иначе скрываем элемент form-container
+      formContainer.style.display = 'none';
+    }
+  });
+             
+            }
           // Отправляем запрос на сервер и получаем соответствующий контент
           fetch(`http://localhost:3000${path}`)
             .then(response => response.text())
             .then(content => {
 
-              document.getElementById('form-container').innerHTML = '';
+
+            
+
               // Вставляем контент в элемент с идентификатором "content"
               document.getElementById('content').innerHTML = content;
               // Добавляем обработчики событий для элементов формы
@@ -67,7 +93,25 @@ const formContainer = document.querySelector('#form-container');
       });
 
 
- 
+ // Получаем текущую активную вкладку из localStorage или устанавливаем значение по умолчанию
+let currentTab =  localStorage.getItem('currentTab') || 'my-orders';
+
+
+// Получаем текущий путь из localStorage или устанавливаем значение по умолчанию
+
+
+
+// Отправляем AJAX-запрос на сервер для получения контента для текущей активной вкладки
+fetch(currentTab)
+  .then(response => response.text())
+  .then(content => {
+    // Вставляем контент в элемент с идентификатором "form-container"
+    document.querySelector('#form-container').innerHTML = content;
+    // Добавляем обработчики событий для элементов формы
+    
+    addFormEventListeners();
+  });
+
 
 
       function addFormEventListeners() {
@@ -82,6 +126,7 @@ const formContainer = document.querySelector('#form-container');
             // Отображаем форму регистрации
             document.getElementById('register-form').style.display = 'block';
           });
+
           const backButton = document.getElementById('back-button');
     if (backButton) {
         backButton.addEventListener('click', event => {
@@ -94,79 +139,97 @@ const formContainer = document.querySelector('#form-container');
         });
         }
       }
-      
-        // Добавляем обработчик события submit на форму входа
-        const loginForm = document.getElementById('login-form');
-        if (loginForm) {
-          loginForm.addEventListener('submit', event => {
-            // Отменяем действие по умолчанию (отправка формы)
-            event.preventDefault();
-            // Получаем данные из формы
-            const formData = new FormData(event.target);
-            // Отправляем данные на сервер с помощью AJAX
-            fetch('http://localhost:3000/login', {
-              method: 'POST',
-              body: formData
-            })
-              .then(response => response.text())
-              .then(text => {
-                // Обрабатываем ответ сервера
-                console.log(text);
 
-                if (text === 'Вход выполнен успешно') {
-                  console.log('Отображаем уведомление об успешном входе:', text);
-                  // Отображаем уведомление об успешном входе
-                  alert(text);
-                  // Отправляем новый запрос на сервер для получения контента для страницы "Личный кабинет"
-                  fetch('http://localhost:3000/account')
-                    .then(response => response.text())
-                    .then(content => {
-                      // Вставляем контент в элемент с идентификатором "content"
-                      document.getElementById('content').innerHTML = content;
-                      // Добавляем обработчики событий для элементов формы
-                      addFormEventListeners();
-                    });
-                } else {
-                  // Иначе отображаем уведомление о неудачном входе
-                  alert(text);
-                }
-              })
-              .catch(error => {
-                // Обрабатываем ошибки
-                console.error(error);
-              });
-          });
+
+
+// Добавляем обработчик события submit на форму входа
+const loginForm = document.getElementById('login-form');
+if (loginForm && !loginForm.dataset.eventListenerAdded) {
+  loginForm.addEventListener('submit', event => {
+    // Отменяем действие по умолчанию (отправка формы)
+    event.preventDefault();
+    // Получаем данные из формы
+    const formData = new FormData(event.target);
+    // Отправляем данные на сервер с помощью AJAX
+    fetch('http://localhost:3000/login', {
+      method: 'POST',
+      body: formData
+    })
+      .then(response => response.text())
+      .then(text => {
+        // Обрабатываем ответ сервера
+        console.log(text);
+
+        if (text === 'Вход выполнен успешно') {
+          console.log('Отображаем уведомление об успешном входе:', text);
+          // Отображаем уведомление об успешном входе
+          alert(text);
+          // Отправляем новый запрос на сервер для получения контента для страницы "Личный кабинет"
+          fetch('http://localhost:3000/account')
+            .then(response => response.text())
+            .then(content => {
+              // Вставляем контент в элемент с идентификатором "content"
+              document.getElementById('content').innerHTML = content;
+              // Добавляем обработчики событий для элементов формы
+              addFormEventListeners();
+
+              // Восстанавливаем текущую активную вкладку внутри личного кабинета
+              let currentTab = localStorage.getItem('currentTab') || '/my-orders';
+              fetch(currentTab)
+                .then(response => response.text())
+                .then(content => {
+                  // Вставляем контент в элемент с идентификатором "form-container"
+                  document.querySelector('#form-container').innerHTML = content;
+                  // Добавляем обработчики событий для элементов формы
+                  formContainer.style.display = 'flex';
+                  addFormEventListeners();
+                });
+            });
+            
+        } else {
+          // Иначе отображаем уведомление о неудачном входе
+          alert(text);
         }
+      })
+      .catch(error => {
+        // Обрабатываем ошибки
+        console.error(error);
+      });
+  });
+  loginForm.dataset.eventListenerAdded = true;
+}
 
-        
 
-        // Добавляем обработчик события submit на форму регистрации
-        const registerForm = document.getElementById('register-form');
-        if (registerForm) {
-          registerForm.addEventListener('submit', event => {
-            // Отменяем действие по умолчанию (отправка формы)
-            event.preventDefault();
-            // Получаем данные из формы
-            const formData = new FormData(event.target);
-            // Отправляем данные на сервер с помощью AJAX
-            fetch('http://localhost:3000/register', {
-              method: 'POST',
-              body: formData
-            })
-              .then(response => response.text())
-              .then(text => {
-                // Обрабатываем ответ сервера
-                console.log(text);
-                alert(text);
-                location.reload();
-                
+          
+
+          // Добавляем обработчик события submit на форму регистрации
+          const registerForm = document.getElementById('register-form');
+          if (registerForm && !registerForm.dataset.eventListenerAdded) {
+            registerForm.addEventListener('submit', event => {
+              // Отменяем действие по умолчанию (отправка формы)
+              event.preventDefault();
+              // Получаем данные из формы
+              const formData = new FormData(event.target);
+              // Отправляем данные на сервер с помощью AJAX
+              fetch('http://localhost:3000/register', {
+                method: 'POST',
+                body: formData
               })
-              .catch(error => {
-                // Обрабатываем ошибки
-                console.error(error);
-              });
-          });
-        }
+                .then(response => response.text())
+                .then(text => {
+                  // Обрабатываем ответ сервера
+                  console.log(text);
+                  alert(text);
+                  location.reload();
+                  
+                })
+                .catch(error => {
+                  // Обрабатываем ошибки
+                  console.error(error);
+                });
+            });
+            registerForm.dataset.eventListenerAdded = true;
+          }
 
        
 
@@ -188,31 +251,86 @@ const formContainer = document.querySelector('#form-container');
                 formContainer.style.display = 'flex';
                 addFormEventListeners();
               });
+              localStorage.setItem('currentTab', '/create-request');
           });
           createRequestLink.dataset.eventListenerAdded = true
         }
 
-// Добавляем обработчик события click на ссылку "Оформить заказ"
+
+
+
+// Добавляем обработчик события click на ссылку "Мой профиль"
 const myProfileRequestLink = document.querySelector('a[href="/my-profile"]');
-        if (myProfileRequestLink && !myProfileRequestLink.dataset.eventListenerAdded) {
-          myProfileRequestLink.addEventListener('click', event => {
-            console.log('Clicked on create request link'); // Добавляем сообщение для отладки
-            // Отменяем действие по умолчанию (переход по ссылке)
-            event.preventDefault();
-            // Отправляем новый запрос на сервер для получения контента для страницы "Создать заявку"
-            fetch('/my-profile')
-              .then(response => response.text())
-              .then(content => {
-                // Вставляем контент в нужный элемент на странице
-                document.querySelector('#form-container').innerHTML = content;
-                
-                // Добавляем обработчики событий для элементов формы
-                formContainer.style.display = 'flex';
-                addFormEventListeners();
-              });
-          });
-          myProfileRequestLink.dataset.eventListenerAdded = true
+if (myProfileRequestLink && !myProfileRequestLink.dataset.eventListenerAdded) {
+  myProfileRequestLink.addEventListener('click', event => {
+    console.log('Clicked on create request link'); // Добавляем сообщение для отладки
+    // Отменяем действие по умолчанию (переход по ссылке)
+    event.preventDefault();
+    // Отправляем новый запрос на сервер для получения контента для страницы "Создать заявку"
+    fetch('/my-profile')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Ошибка при получении контента для страницы "Мой профиль": ${response.statusText}`);
         }
+        return response.text();
+      })
+      .then(content => {
+        // Вставляем контент в нужный элемент на странице
+        document.querySelector('#form-container').innerHTML = content;
+
+        // Добавляем обработчики событий для элементов формы
+        formContainer.style.display = 'flex';
+        addFormEventListeners();
+      })
+      .catch(error => {
+        // Обрабатываем ошибки
+        console.error(error);
+        alert(error.message);
+      });
+    localStorage.setItem('currentTab', '/my-profile');
+  });
+  myProfileRequestLink.dataset.eventListenerAdded = true;
+}
+// Добавляем обработчик события submit на форму обновления профиля
+const updateProfileForm = document.querySelector('form[action="/update-profile"]');
+if (updateProfileForm) {
+  updateProfileForm.addEventListener('submit', event => {
+    // Отменяем действие по умолчанию (отправка формы)
+    event.preventDefault();
+
+    // Собираем данные из формы
+    const formData = new FormData(updateProfileForm);
+
+    // Отправляем данные на сервер для обновления информации о пользователе
+    fetch('/update-profile', {
+      method: 'POST',
+      body: formData
+    })
+      .then(response => response.text())
+      .then(message => {
+        // Отображаем сообщение от сервера
+        alert(message);
+        location.reload();
+      })
+      .catch(error => {
+        // Обрабатываем ошибки
+        console.error(error);
+        alert(error.message);
+      });
+  });
+}
+
+
+// Добавляем обработчик события click на кнопку "Изменить данные аккаунта"
+const updateProfileButton = document.getElementById('update-profile-button');
+if (updateProfileButton) {
+  updateProfileButton.addEventListener('click', event => {
+    // Отменяем действие по умолчанию (отправка формы)
+    event.preventDefault();
+    // Отображаем форму обновления данных в профиле
+    document.getElementById('update-profile-form').style.display = 'block';
+  });
+}
 
 
 
@@ -234,6 +352,7 @@ const myProfileRequestLink = document.querySelector('a[href="/my-profile"]');
                 formContainer.style.display = 'flex';
                 addFormEventListeners();
               });
+              localStorage.setItem('currentTab', '/accept-request');
           });
           acceptRequestLink.dataset.eventListenerAdded = true
         }
@@ -255,6 +374,7 @@ if (adminPanelLink && !adminPanelLink.dataset.eventListenerAdded) {
                 formContainer.style.display = 'flex';
                 addFormEventListeners();
       });
+      localStorage.setItem('currentTab', '/employees-admin-panel');
   });
   adminPanelLink.dataset.eventListenerAdded = true
 }
@@ -270,12 +390,31 @@ if (createRequestForm && !createRequestForm.dataset.eventListenerAdded) {
 
     // Получаем данные из формы
     const formData = new FormData(event.target);
+
+
+
+    // Получаем значения полей ввода
+    const dress = formData.get('dress');
+    const shirt = formData.get('shirt');
+    const shorts = formData.get('shorts');
+    const jeans = formData.get('jeans');
+    const socks = formData.get('socks');
+    const hat = formData.get('hat');
+
+    // Проверяем, заполнено ли хотя бы одно поле
+    if (!dress && !shirt && !shorts && !jeans && !socks && !hat) {
+      // Если ни одно поле не заполнено, отображаем сообщение об ошибке
+      alert('Пожалуйста, выберите хотя бы один товар или услугу');
+      return;
+    }
+
  // Вычисляем итоговую стоимость заказа
  const dressPrice = 500;
     const shirtPrice = 300;
     const shortsPrice = 100;
     const jeansPrice = 250;
     const socksPrice = 250;
+    const hatPrice = 400;
     
     // Добавьте цены для других предметов
     const dressCount = parseInt(document.querySelector('input[name="dress"]').value) || 0;
@@ -283,7 +422,8 @@ if (createRequestForm && !createRequestForm.dataset.eventListenerAdded) {
     const shortsCount = parseInt(document.querySelector('input[name="shorts"]').value) || 0;
     const jeansCount = parseInt(document.querySelector('input[name="jeans"]').value) || 0;
     const socksCount = parseInt(document.querySelector('input[name="socks"]').value) || 0;
-    const total = dressPrice * dressCount + shirtPrice * shirtCount + shortsPrice * shortsCount + jeansPrice * jeansCount + socksPrice * socksCount;
+    const hatCount = parseInt(document.querySelector('input[name="hat"]').value) || 0;
+    const total = dressPrice * dressCount + shirtPrice * shirtCount + shortsPrice * shortsCount + jeansPrice * jeansCount + socksPrice * socksCount + hatPrice * hatCount;
 
   // Добавляем итоговую стоимость в данные формы
   formData.append('total', total);
@@ -298,6 +438,7 @@ if (createRequestForm && !createRequestForm.dataset.eventListenerAdded) {
         // Обрабатываем ответ сервера
         console.log(text);
         alert(text);
+        location.reload();
       })
       .catch(error => {
         // Обрабатываем ошибки
@@ -306,6 +447,31 @@ if (createRequestForm && !createRequestForm.dataset.eventListenerAdded) {
   });
   createRequestForm.dataset.eventListenerAdded = true;
 }
+
+
+const deliveryRadio = document.getElementById('delivery');
+const addressFields = document.getElementById('address-fields');
+if (deliveryRadio) {
+  deliveryRadio.addEventListener('change', event => {
+    if (event.target.checked) {
+      // Если выбрана доставка на дом, отображаем поля ввода для адреса
+      addressFields.style.display = 'block';
+    } else {
+      // Иначе скрываем поля ввода для адреса
+      addressFields.style.display = 'none';
+    }
+  });
+}
+const pickupRadio = document.getElementById('pickup');
+if (pickupRadio) {
+  pickupRadio.addEventListener('change', event => {
+    if (event.target.checked) {
+      // Если выбран самовывоз, скрываем поля ввода для адреса
+      addressFields.style.display = 'none';
+    }
+  });
+}
+
 
 // Добавляем обработчик события input на поля ввода количества предметов
 document.querySelectorAll('input[type="number"]').forEach(input => {
@@ -316,6 +482,7 @@ document.querySelectorAll('input[type="number"]').forEach(input => {
     const shortsPrice = 100;
     const jeansPrice = 250;
     const socksPrice = 250;
+    const hatPrice = 400;
     
     // Добавьте цены для других предметов
     const dressCount = parseInt(document.querySelector('input[name="dress"]').value) || 0;
@@ -323,8 +490,9 @@ document.querySelectorAll('input[type="number"]').forEach(input => {
     const shortsCount = parseInt(document.querySelector('input[name="shorts"]').value) || 0;
     const jeansCount = parseInt(document.querySelector('input[name="jeans"]').value) || 0;
     const socksCount = parseInt(document.querySelector('input[name="socks"]').value) || 0;
+    const hatCount = parseInt(document.querySelector('input[name="hat"]').value) || 0;
     // Добавьте количество для других предметов
-    const total = dressPrice * dressCount + shirtPrice * shirtCount + shortsPrice * shortsCount + jeansPrice * jeansCount + socksPrice * socksCount; // Добавьте стоимость других предметов
+    const total = dressPrice * dressCount + shirtPrice * shirtCount + shortsPrice * shortsCount + jeansPrice * jeansCount + socksPrice * socksCount + hatPrice * hatCount; // Добавьте стоимость других предметов
 
     // Обновляем итоговую стоимость на странице
     document.getElementById('total').textContent = total;
@@ -348,6 +516,7 @@ document.querySelectorAll('input[type="number"]').forEach(input => {
           location.reload();
           addFormEventListeners();
         });
+       
     });
   }
 
@@ -367,9 +536,12 @@ if (myOrdersLink && !myOrdersLink.dataset.eventListenerAdded) {
         // Вставляем таблицу в нужный элемент на странице
         document.querySelector('#form-container').innerHTML = table;
         formContainer.style.display = 'flex';
-        // Вызываем функцию addFormEventListeners для добавления обработчиков событий на новые элементы формы
+        // Вызываем функцию addFormEventListeners для добавления обработчиков событий на новые элементы формы]
+        location.reload();
         addFormEventListeners();
       });
+      localStorage.setItem('currentTab', '/my-orders');
+     
   });
   myOrdersLink.dataset.eventListenerAdded = true;
 }
@@ -481,12 +653,10 @@ document.querySelectorAll('.fire-employee-button').forEach(button => {
   });
 });
 
-
-
 }
-
-
     </script>
+
+
 <script>
   fetch(currentPath)
 .then(response => response.text())
@@ -496,7 +666,34 @@ document.querySelectorAll('.fire-employee-button').forEach(button => {
   // Добавляем обработчики событий для элементов формы
   addFormEventListeners();
 });
-formContainer.style.display = 'none';
+
+if (currentPath !== '/account') {
+               formContainer.style.display = 'none';
+              }
+              
+else {
+              
+
+// Проверяем статус авторизации пользователя
+fetch('/account')
+  .then(response => response.text())
+  .then(content => {
+
+  
+    if (content.includes('Личный кабинет')) {
+      // Если текущий путь равен "/account" и пользователь авторизован, отображаем элемент form-container
+      formContainer.style.display = 'flex';
+    } else {
+      // Иначе скрываем элемент form-container
+      formContainer.style.display = 'none';
+    }
+  });
+  }
+            
+
+
+
+    
 </script>
 
 
